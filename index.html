@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Canteen Ordering — Magpapalayoc National High School</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue-900: #0D1B4B;
+  --blue-700: #1345A8;
+  --blue-600: #1A56D6;
+  --blue-500: #2563EB;
+  --blue-400: #4B82F8;
+  --blue-100: #DBEAFE;
+  --blue-50:  #EFF6FF;
+  --white:    #FFFFFF;
+  --gray-50:  #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-700: #334155;
+  --gray-900: #0F172A;
+  --green:    #16A34A;
+  --green-bg: #DCFCE7;
+  --red:      #DC2626;
+  --red-bg:   #FEE2E2;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.08);
+  --shadow-xl: 0 20px 48px rgba(0,0,0,.16), 0 4px 12px rgba(0,0,0,.08);
+  --r-sm: 8px;
+  --r:    12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-full: 9999px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--gray-100);
+  color: var(--gray-900);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; min-height: 100dvh; flex-direction: column; }
+.page.active { display: flex; animation: pageIn .24s cubic-bezier(.4,0,.2,1) both; }
+@keyframes pageIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: var(--shadow-xs);
+}
+.topbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.topbar-logo {
+  width: 36px; height: 36px;
+  background: var(--blue-500);
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.topbar-logo svg { width: 20px; height: 20px; color: white; }
+.topbar-title { font-size: 14px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
+.topbar-sub { font-size: 11px; color: var(--gray-500); font-weight: 500; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  padding: 10px 20px; border-radius: var(--r-full); border: none;
+  cursor: pointer; transition: all .15s ease;
+  white-space: nowrap; text-decoration: none; line-height: 1;
+}
+.btn:active { transform: scale(.97); }
+.btn-blue  { background: var(--blue-500); color: white; }
+.btn-blue:hover  { background: var(--blue-600); box-shadow: 0 4px 12px rgba(37,99,235,.35); }
+.btn-ghost { background: transparent; color: var(--blue-600); }
+.btn-ghost:hover { background: var(--blue-50); }
+.btn-outline { background: white; color: var(--gray-700); border: 1.5px solid var(--gray-200); }
+.btn-outline:hover { border-color: var(--gray-300); background: var(--gray-50); }
+.btn-white { background: white; color: var(--blue-600); border: none; }
+.btn-white:hover { background: var(--blue-50); }
+.btn-lg { padding: 13px 28px; font-size: 15px; }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.btn-full { width: 100%; }
+
+/* ── SECTION CHIPS ── */
+.chip {
+  display: inline-flex; align-items: center; padding: 3px 10px;
+  border-radius: var(--r-full); font-size: 11px; font-weight: 700;
+}
+.chip-Wakelet  { background: #EDE7F6; color: #4527A0; }
+.chip-Einstein { background: var(--blue-100); color: var(--blue-700); }
+.chip-Galilei  { background: #FFF3E0; color: #BF360C; }
+.chip-Newton   { background: var(--green-bg); color: #14532D; }
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+.field label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--gray-500); margin-bottom: 6px; letter-spacing: .3px;
+}
+.field input, .field select {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--r);
+  font-family: inherit; font-size: 14px; color: var(--gray-900);
+  background: white; outline: none;
+  transition: border-color .15s, box-shadow .15s; appearance: none;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.field input::placeholder { color: var(--gray-400); }
+.select-wrap { position: relative; }
+.select-wrap svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--gray-400); width: 16px; height: 16px; }
+.error-msg { font-size: 13px; color: var(--red); margin-top: 6px; display: none; font-weight: 500; }
+
+/* ── CARD ── */
+.card {
+  background: white; border-radius: var(--r-xl);
+  box-shadow: var(--shadow-md); overflow: hidden;
+  width: 100%; max-width: 420px;
+}
+.card-head { padding: 28px 28px 0; }
+.card-head h2 { font-size: 22px; font-weight: 800; color: var(--gray-900); margin-bottom: 4px; }
+.card-head p  { font-size: 14px; color: var(--gray-500); }
+.card-body   { padding: 20px 28px; }
+.card-footer { padding: 0 28px 28px; }
+.card-divider { height: 1px; background: var(--gray-100); margin: 16px 0; }
+.center-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 20px; }
+
+/* ════════════════════════════════
+   LANDING
+════════════════════════════════ */
+#landing {
+  background: white;
+  flex-direction: row !important;
+}
+.land-left {
+  flex: 1; max-width: 560px;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 64px 60px;
+}
+.land-school-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--blue-50); border: 1px solid var(--blue-100);
+  border-radius: var(--r-full); padding: 6px 14px;
+  font-size: 12px; font-weight: 700; color: var(--blue-600);
+  letter-spacing: .4px; text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.land-h1 {
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 900; line-height: 1.08;
+  letter-spacing: -1.5px;
+  color: var(--gray-900);
+  margin-bottom: 18px;
+}
+.land-h1 .blue { color: var(--blue-500); }
+.land-p {
+  font-size: 16px; color: var(--gray-500);
+  line-height: 1.75; margin-bottom: 40px;
+  max-width: 400px;
+}
+.land-school-name {
+  font-size: 13px; font-weight: 600; color: var(--gray-400);
+  margin-bottom: 40px; letter-spacing: .2px;
+}
+.land-school-name strong { color: var(--blue-700); }
+.land-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.land-right {
+  flex: 1;
+  background: linear-gradient(150deg, var(--blue-50) 0%, #EFF6FF 40%, #F0F9FF 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 48px; position: relative; overflow: hidden;
+}
+.land-right::before {
+  content: ''; position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(37,99,235,.06), transparent 65%);
+  top: -150px; right: -150px; border-radius: 50%;
+}
+.land-right::after {
+  content: ''; position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(37,99,235,.04), transparent 65%);
+  bottom: -100px; left: -100px; border-radius: 50%;
+}
+
+.preview-card {
+  background: white; border-radius: var(--r-xl);
+  padding: 28px; width: 100%; max-width: 300px;
+  box-shadow: var(--shadow-xl); position: relative; z-index: 1;
+}
+.preview-header {
+  padding-bottom: 16px; border-bottom: 1px solid var(--gray-100); margin-bottom: 16px;
+}
+.preview-school { font-size: 11px; font-weight: 700; color: var(--blue-500); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 4px; }
+.preview-title { font-size: 16px; font-weight: 800; color: var(--gray-900); }
+
+.preview-items { display: flex; flex-direction: column; gap: 8px; }
+.preview-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--gray-50); border-radius: var(--r-sm);
+  padding: 10px 12px;
+}
+.preview-item-name { font-size: 13px; font-weight: 500; color: var(--gray-700); }
+.preview-item-price { font-size: 13px; font-weight: 800; color: var(--blue-500); }
+
+.preview-total {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--gray-100);
+}
+.preview-total-label { font-size: 13px; font-weight: 600; color: var(--gray-500); }
+.preview-total-val { font-size: 18px; font-weight: 800; color: var(--blue-500); }
+
+.preview-status {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--green-bg); border-radius: var(--r-sm);
+  padding: 8px 12px; margin-top: 12px;
+  font-size: 12px; font-weight: 700; color: var(--green);
+}
+.status-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+
+/* ════════════════════════════════
+   MENU
+════════════════════════════════ */
+#menu-page { background: var(--gray-100); }
+.menu-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 24px 100px; }
+
+.user-banner {
+  background: white; border-radius: var(--r-lg);
+  padding: 16px 20px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--gray-100);
+}
+.user-av {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--blue-500); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 17px; flex-shrink: 0;
+}
+.user-name { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+.user-sec { margin-top: 3px; }
+.banner-hint { font-size: 13px; color: var(--gray-400); margin-left: auto; font-weight: 500; }
+
+.cat-head {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--gray-400);
+  margin: 28px 0 14px;
+}
+.cat-head::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; }
+
+.item-card {
+  background: white; border-radius: var(--r-lg);
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-xs);
+  cursor: pointer; transition: all .18s ease;
+  position: relative; overflow: hidden;
+}
+.item-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--gray-200); }
+.item-card:active { transform: scale(.97); }
+.item-card.in-cart { border-color: var(--blue-500); box-shadow: 0 0 0 1px var(--blue-500), var(--shadow-sm); }
+
+.item-icon-box {
+  width: 100%; aspect-ratio: 1;
+  background: var(--blue-50);
+  display: flex; align-items: center; justify-content: center;
+}
+.item-icon-box svg { width: 48px; height: 48px; color: var(--blue-400); opacity: .7; }
+
+.item-card.drink .item-icon-box { background: #EFF6FF; }
+.item-card.drink .item-icon-box svg { color: var(--blue-500); }
+
+.item-body { padding: 18px 16px 16px; }
+.item-name { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.4; margin-bottom: 14px; min-height: 40px; }
+.item-foot { display: flex; align-items: center; justify-content: space-between; }
+.item-price { font-size: 16px; font-weight: 800; color: var(--blue-500); }
+.item-add {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--blue-500); color: white; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .15s; font-size: 18px; line-height: 1;
+}
+.item-add:hover { background: var(--blue-600); }
+
+.item-qty-badge {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--blue-500); color: white;
+  font-size: 11px; font-weight: 800;
+  padding: 2px 8px; border-radius: var(--r-full);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── FAB ── */
+.fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 60;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--blue-500); color: white;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  padding: 14px 22px; border-radius: var(--r-full); border: none;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(37,99,235,.4);
+  transition: all .2s ease;
+}
+.fab:hover { background: var(--blue-600); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,.45); }
+.fab.hidden { opacity: 0; pointer-events: none; transform: translateY(16px); }
+.fab-icon { width: 18px; height: 18px; }
+.fab-badge {
+  background: white; color: var(--blue-500);
+  min-width: 22px; height: 22px; border-radius: var(--r-full);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; padding: 0 4px;
+}
+
+/* ── DRAWER ── */
+.overlay { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 100; display: none; backdrop-filter: blur(3px); }
+.overlay.open { display: block; }
+
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 100%; max-width: 400px;
+  background: white; z-index: 101;
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  transform: translateX(100%);
+  transition: transform .28s cubic-bezier(.4,0,.2,1);
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-head {
+  padding: 20px 24px; border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.drawer-head h3 { font-size: 17px; font-weight: 800; color: var(--gray-900); }
+.close-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--gray-200); background: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--gray-500); font-size: 16px;
+  transition: all .15s;
+}
+.close-btn:hover { background: var(--gray-100); border-color: var(--gray-300); }
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 16px 24px; }
+.drawer-foot { padding: 16px 24px; border-top: 1px solid var(--gray-100); }
+
+.cart-empty { text-align: center; padding: 56px 0; }
+.cart-empty-icon { width: 64px; height: 64px; margin: 0 auto 16px; color: var(--gray-300); }
+.cart-empty-icon svg { width: 100%; height: 100%; }
+.cart-empty h4 { font-size: 16px; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; }
+.cart-empty p { font-size: 14px; color: var(--gray-400); }
+
+.cart-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+}
+.cart-row:last-child { border-bottom: none; }
+.cart-icon {
+  width: 44px; height: 44px; border-radius: var(--r-sm);
+  background: var(--blue-50);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.cart-icon svg { width: 22px; height: 22px; color: var(--blue-400); }
+.cart-info { flex: 1; min-width: 0; }
+.cart-name { font-size: 14px; font-weight: 600; color: var(--gray-900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cart-sub  { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.cart-qty  { display: flex; align-items: center; gap: 8px; }
+.qty-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--gray-200); background: none;
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gray-700); transition: all .15s;
+}
+.qty-btn:hover { border-color: var(--blue-500); color: var(--blue-500); }
+.qty-num { font-size: 14px; font-weight: 700; min-width: 18px; text-align: center; color: var(--gray-900); }
+
+.cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.cart-total-row span  { font-size: 14px; color: var(--gray-500); font-weight: 500; }
+.cart-total-row strong { font-size: 24px; font-weight: 800; color: var(--gray-900); }
+
+/* ── SUCCESS ── */
+#success-page { background: white; }
+.success-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
+.success-check { width: 80px; height: 80px; border-radius: 50%; background: var(--green-bg); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+.success-check svg { width: 40px; height: 40px; color: var(--green); }
+.success-h2 { font-size: 28px; font-weight: 900; letter-spacing: -.5px; margin-bottom: 8px; }
+.success-p  { font-size: 15px; color: var(--gray-500); margin-bottom: 32px; max-width: 340px; }
+
+.receipt {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--r-lg); padding: 20px 22px;
+  max-width: 340px; width: 100%; text-align: left; margin-bottom: 28px;
+}
+.receipt-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 14px; }
+.receipt-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-700); margin-bottom: 8px; }
+.receipt-row:last-of-type { margin-bottom: 0; }
+.receipt-divider { height: 1px; background: var(--gray-200); margin: 12px 0; }
+.receipt-total { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: var(--gray-900); }
+.receipt-total span { color: var(--blue-500); }
+.receipt-meta { margin-top: 12px; font-size: 12px; color: var(--gray-400); }
+
+/* ── ADMIN LOGIN ── */
+#admin-login { background: var(--gray-100); }
+
+/* ── ADMIN DASHBOARD ── */
+#admin-dashboard { background: var(--gray-100); }
+
+.admin-bar {
+  background: var(--blue-900);
+  height: 64px; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.admin-bar-left { display: flex; align-items: center; gap: 14px; }
+.admin-bar-logo {
+  width: 36px; height: 36px; background: rgba(255,255,255,.12);
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+}
+.admin-bar-logo svg { width: 20px; height: 20px; color: white; }
+.admin-bar-title { font-size: 15px; font-weight: 800; color: white; }
+.admin-bar-sub { font-size: 11px; color: rgba(255,255,255,.5); font-weight: 500; }
+
+.tabs-bar {
+  background: white; border-bottom: 1px solid var(--gray-200);
+  display: flex; padding: 0 20px; overflow-x: auto;
+}
+.tab-btn {
+  padding: 15px 16px; font-size: 13px; font-weight: 600; color: var(--gray-500);
+  border: none; border-bottom: 2.5px solid transparent; background: none;
+  font-family: inherit; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--gray-900); background: var(--gray-50); }
+.tab-btn.active { color: var(--blue-500); border-bottom-color: var(--blue-500); }
+
+.dash-body { max-width: 1000px; margin: 0 auto; padding: 28px 24px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: white; border-radius: var(--r-lg); padding: 20px; box-shadow: var(--shadow-xs); border: 1px solid var(--gray-100); }
+.stat-val { font-size: 30px; font-weight: 900; color: var(--blue-500); line-height: 1; letter-spacing: -1px; }
+.stat-val.green { color: var(--green); }
+.stat-lbl { font-size: 12px; font-weight: 600; color: var(--gray-400); margin-top: 6px; }
+
+.orders-list { display: flex; flex-direction: column; gap: 12px; }
+.order-card {
+  background: white; border-radius: var(--r-lg);
+  padding: 20px; box-shadow: var(--shadow-xs);
+  border: 1px solid var(--gray-100);
+}
+.order-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.order-name { font-size: 16px; font-weight: 800; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.order-meta { font-size: 12px; color: var(--gray-400); margin-top: 4px; font-weight: 500; }
+.new-tag { background: var(--green); color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: var(--r-full); }
+
+.order-items-box { background: var(--gray-50); border-radius: var(--r-sm); padding: 12px 14px; border: 1px solid var(--gray-100); }
+.order-item-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-700); padding: 4px 0; }
+.order-item-row:not(:last-child) { border-bottom: 1px solid var(--gray-200); }
+.order-item-row span:last-child { font-weight: 700; color: var(--gray-500); }
+
+.order-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-100); }
+.order-total { font-size: 15px; font-weight: 800; color: var(--gray-900); }
+.order-total span { color: var(--blue-500); }
+
+.empty-state { text-align: center; padding: 72px 20px; }
+.empty-state-icon { width: 64px; height: 64px; margin: 0 auto 16px; color: var(--gray-300); }
+.empty-state-icon svg { width: 100%; height: 100%; }
+.empty-state h3 { font-size: 18px; font-weight: 800; color: var(--gray-700); margin-bottom: 6px; }
+.empty-state p  { font-size: 14px; color: var(--gray-400); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--gray-900); color: white;
+  padding: 11px 20px; border-radius: var(--r);
+  font-size: 13px; font-weight: 600;
+  z-index: 999; opacity: 0; pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  box-shadow: var(--shadow-lg); white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  #landing { flex-direction: column !important; }
+  .land-left { padding: 40px 24px; max-width: none; }
+  .land-right { min-height: 300px; padding: 32px 20px; }
+  .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .drawer { max-width: 100%; }
+  .fab { bottom: 16px; right: 16px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .card { border-radius: var(--r-lg); }
+  .admin-bar { height: auto; padding: 14px 16px; }
+}
+@media (max-width: 400px) {
+  .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .item-body { padding: 10px 11px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LANDING ══════════════════ -->
+<div id="landing" class="page active">
+  <div class="land-left">
+    <div class="land-school-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Official Canteen Portal
+    </div>
+    <h1 class="land-h1">Digital<br><span class="blue">Canteen</span><br>Ordering</h1>
+    <p class="land-p">Browse the menu, build your cart, and pick up at the canteen — fast, easy, no waiting in line.</p>
+    <div class="land-school-name">
+      <strong>Magpapalayoc National High School</strong><br>School Year 2025 – 2026
+    </div>
+    <div class="land-btns">
+      <button class="btn btn-blue btn-lg" onclick="go('order-form')">Order Now</button>
+      <button class="btn btn-outline btn-lg" onclick="go('admin-login')">Admin Panel</button>
+    </div>
+  </div>
+  <div class="land-right">
+    <div class="preview-card">
+      <div class="preview-header">
+        <div class="preview-school">Magpapalayoc NHS</div>
+        <div class="preview-title">Sample Order Preview</div>
+      </div>
+      <div class="preview-items">
+        <div class="preview-item"><span class="preview-item-name">Siomai Rice</span><span class="preview-item-price">₱35</span></div>
+        <div class="preview-item"><span class="preview-item-name">Coca-Cola</span><span class="preview-item-price">₱30</span></div>
+        <div class="preview-item"><span class="preview-item-name">Oishi Crackers</span><span class="preview-item-price">₱10</span></div>
+      </div>
+      <div class="preview-total">
+        <span class="preview-total-label">Total Amount</span>
+        <span class="preview-total-val">₱75</span>
+      </div>
+      <div class="preview-status">
+        <div class="status-dot"></div>
+        Ready for pickup
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ ORDER FORM ══════════════════ -->
+<div id="order-form" class="page">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Magpapalayoc NHS</div>
+        <div class="topbar-sub">Digital Canteen Ordering</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="go('landing')">Back</button>
+  </div>
+  <div class="center-wrap">
+    <div class="card">
+      <div class="card-head">
+        <h2>Start Your Order</h2>
+        <p>Enter your details to continue to the menu.</p>
+      </div>
+      <div class="card-body">
+        <div class="card-divider"></div>
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="s-name" placeholder="e.g. Maria Santos" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Section</label>
+          <div class="select-wrap">
+            <select id="s-section">
+              <option value="">Choose your section</option>
+              <option>Wakelet</option>
+              <option>Einstein</option>
+              <option>Galilei</option>
+              <option>Newton</option>
+            </select>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-blue btn-full" onclick="startOrder()">Continue to Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MENU ══════════════════ -->
+<div id="menu-page" class="page">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Magpapalayoc NHS</div>
+        <div class="topbar-sub">Digital Canteen Ordering — Menu</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="go('order-form')">Change Info</button>
+  </div>
+
+  <div class="menu-wrap">
+    <div class="user-banner">
+      <div class="user-av" id="user-av">?</div>
+      <div>
+        <div class="user-name" id="user-name-el">—</div>
+        <div class="user-sec"><span class="chip" id="user-sec-el">—</span></div>
+      </div>
+      <span class="banner-hint">Tap any item to add</span>
+    </div>
+
+    <div class="cat-head">Snacks</div>
+    <div class="menu-grid" id="snacks-grid"></div>
+
+    <div class="cat-head">Drinks</div>
+    <div class="menu-grid" id="drinks-grid"></div>
+  </div>
+
+  <button class="fab hidden" id="fab-btn" onclick="openDrawer()">
+    <svg class="fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39A2 2 0 009.66 16h9.72a2 2 0 001.98-1.61L23 6H6"/>
+    </svg>
+    View Cart
+    <span class="fab-badge" id="fab-count">0</span>
+  </button>
+</div>
+
+<!-- ══════════════════ CART DRAWER ══════════════════ -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Your Cart</h3>
+    <button class="close-btn" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+  <div class="drawer-foot" id="drawer-foot">
+    <div class="cart-total-row">
+      <span>Subtotal</span>
+      <strong id="cart-total">₱0</strong>
+    </div>
+    <button class="btn btn-blue btn-full" onclick="placeOrder()">Place Order</button>
+  </div>
+</div>
+
+<!-- ══════════════════ SUCCESS ══════════════════ -->
+<div id="success-page" class="page">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo" style="background:var(--green)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Magpapalayoc NHS</div>
+        <div class="topbar-sub">Order Confirmed</div>
+      </div>
+    </div>
+  </div>
+  <div class="success-wrap">
+    <div class="success-check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 class="success-h2">Order Placed!</h2>
+    <p class="success-p">Your order has been received. Please pick it up at the canteen window when your name is called.</p>
+    <div class="receipt" id="receipt-box"></div>
+    <button class="btn btn-blue btn-lg" onclick="newOrder()">Place Another Order</button>
+  </div>
+</div>
+
+<!-- ══════════════════ ADMIN LOGIN ══════════════════ -->
+<div id="admin-login" class="page">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo" style="background:var(--gray-700)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Magpapalayoc NHS</div>
+        <div class="topbar-sub">Admin Panel</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="go('landing')">Back</button>
+  </div>
+  <div class="center-wrap">
+    <div class="card">
+      <div class="card-head">
+        <h2>Admin Login</h2>
+        <p>Enter your password to access the orders dashboard.</p>
+      </div>
+      <div class="card-body">
+        <div class="card-divider"></div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="admin-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()">
+          <div class="error-msg" id="pw-err">Incorrect password. Please try again.</div>
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;gap:10px;justify-content:flex-end;padding-bottom:28px;padding-top:0">
+        <button class="btn btn-outline" onclick="go('landing')">Cancel</button>
+        <button class="btn btn-blue" onclick="adminLogin()">Sign In</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ ADMIN DASHBOARD ══════════════════ -->
+<div id="admin-dashboard" class="page">
+  <div class="admin-bar">
+    <div class="admin-bar-left">
+      <div class="admin-bar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="admin-bar-title">Orders Dashboard</div>
+        <div class="admin-bar-sub">Magpapalayoc National High School</div>
+      </div>
+    </div>
+    <button class="btn-white btn btn-sm" onclick="adminLogout()">Sign Out</button>
+  </div>
+
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="setTab('All',this)">All Orders</button>
+    <button class="tab-btn" onclick="setTab('Wakelet',this)">Wakelet</button>
+    <button class="tab-btn" onclick="setTab('Einstein',this)">Einstein</button>
+    <button class="tab-btn" onclick="setTab('Galilei',this)">Galilei</button>
+    <button class="tab-btn" onclick="setTab('Newton',this)">Newton</button>
+  </div>
+
+  <div class="dash-body">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="orders-list" id="orders-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const SNACKS = [
+  { id:'oishi',      name:'Oishi Prawn Crackers', price:10,  type:'food' },
+  { id:'piatos',     name:'Piatos Chips',          price:20,  type:'food' },
+  { id:'honey',      name:'Honey Butter Chips',    price:20,  type:'food' },
+  { id:'martys',     name:"Marty's Crackers",      price:10,  type:'food' },
+  { id:'siomai',     name:'Siomai',                price:20,  type:'food' },
+  { id:'saucer',     name:'Flying Saucer',         price:15,  type:'food' },
+  { id:'lugaw',      name:'Lugaw',                 price:25,  type:'food' },
+  { id:'siomairice', name:'Siomai Rice',           price:35,  type:'food' },
+  { id:'skinless',   name:'Skinless Longganisa',   price:35,  type:'food' },
+  { id:'crossini',   name:'Crossini',              price:15,  type:'food' },
+];
+const DRINKS = [
+  { id:'coke',   name:'Coca-Cola',     price:30, type:'drink' },
+  { id:'yakult', name:'Yakult',        price:13, type:'drink' },
+  { id:'water',  name:'Bottled Water', price:12, type:'drink' },
+];
+const ALL_ITEMS = [...SNACKS, ...DRINKS];
+
+let cart = {};
+let currentUser = { name:'', section:'' };
+let adminFilter = 'All';
+
+// ── NAVIGATION ──
+function go(pageId) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  const page = document.getElementById(pageId);
+  page.style.display = 'flex';
+  void page.offsetWidth;
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── ORDER FORM ──
+function startOrder() {
+  const name    = document.getElementById('s-name').value.trim();
+  const section = document.getElementById('s-section').value;
+  if (!name)    { showToast('Please enter your name.'); return; }
+  if (!section) { showToast('Please select your section.'); return; }
+  currentUser = { name, section };
+  cart = {};
+  document.getElementById('user-av').textContent      = name[0].toUpperCase();
+  document.getElementById('user-name-el').textContent = name;
+  const secEl = document.getElementById('user-sec-el');
+  secEl.textContent = section;
+  secEl.className   = 'chip chip-' + section;
+  buildMenu();
+  go('menu-page');
+}
+
+// ── MENU ──
+function buildMenu() {
+  buildGrid('snacks-grid', SNACKS);
+  buildGrid('drinks-grid', DRINKS);
+  updateFab();
+}
+
+function buildGrid(gridId, items) {
+  document.getElementById(gridId).innerHTML = items.map(item => {
+    const qty = cart[item.id] || 0;
+    return `
+      <div class="item-card ${qty > 0 ? 'in-cart' : ''}" id="card-${item.id}" onclick="addToCart('${item.id}')">
+        ${qty > 0 ? `<span class="item-qty-badge">${qty}</span>` : ''}
+        <div class="item-body">
+          <div class="item-name">${item.name}</div>
+          <div class="item-foot">
+            <span class="item-price">₱${item.price}</span>
+            <button class="item-add" onclick="event.stopPropagation();addToCart('${item.id}')">+</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function addToCart(id) {
+  const item = ALL_ITEMS.find(i => i.id === id);
+  cart[id] = (cart[id] || 0) + 1;
+  refreshCard(id);
+  updateFab();
+  showToast('Added: ' + item.name);
+}
+
+function refreshCard(id) {
+  const qty  = cart[id] || 0;
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  card.classList.toggle('in-cart', qty > 0);
+  let badge = card.querySelector('.item-qty-badge');
+  if (qty > 0) {
+    if (!badge) { badge = document.createElement('span'); badge.className = 'item-qty-badge'; card.prepend(badge); }
+    badge.textContent = qty;
+  } else badge?.remove();
+}
+
+function totalItems() { return Object.values(cart).reduce((a,b) => a+b, 0); }
+function totalPrice() {
+  return Object.entries(cart).reduce((sum, [id, qty]) => {
+    const item = ALL_ITEMS.find(i => i.id === id);
+    return sum + (item ? item.price * qty : 0);
+  }, 0);
+}
+
+function updateFab() {
+  const n = totalItems();
+  document.getElementById('fab-count').textContent = n;
+  document.getElementById('fab-btn').classList.toggle('hidden', n === 0);
+}
+
+// ── DRAWER ──
+function openDrawer() {
+  renderDrawer();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+function renderDrawer() {
+  const body    = document.getElementById('drawer-body');
+  const foot    = document.getElementById('drawer-foot');
+  const entries = Object.entries(cart).filter(([,q]) => q > 0);
+
+  if (!entries.length) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <h4>Your cart is empty</h4>
+        <p>Add items from the menu to get started.</p>
+      </div>`;
+    foot.style.display = 'none';
+    return;
+  }
+
+  foot.style.display = '';
+  body.innerHTML = entries.map(([id, qty]) => {
+    const item = ALL_ITEMS.find(i => i.id === id);
+    return `
+      <div class="cart-row">
+
+        <div class="cart-info">
+          <div class="cart-name">${item.name}</div>
+          <div class="cart-sub">₱${item.price} × ${qty} = ₱${item.price * qty}</div>
+        </div>
+        <div class="cart-qty">
+          <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('cart-total').textContent = '₱' + totalPrice();
+}
+
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  refreshCard(id);
+  updateFab();
+  renderDrawer();
+}
+
+// ── PLACE ORDER ──
+function placeOrder() {
+  if (!totalItems()) return;
+  const order = {
+    id: Date.now(),
+    name: currentUser.name,
+    section: currentUser.section,
+    items: Object.entries(cart).map(([id, qty]) => {
+      const item = ALL_ITEMS.find(i => i.id === id);
+      return { name: item.name, price: item.price, qty };
+    }),
+    total: totalPrice(),
+    timestamp: new Date().toISOString(),
+    isNew: true,
+  };
+  const orders = JSON.parse(localStorage.getItem('canteen_orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('canteen_orders', JSON.stringify(orders));
+  closeDrawer();
+  buildReceipt(order);
+  go('success-page');
+}
+
+function buildReceipt(order) {
+  const time = new Date(order.timestamp).toLocaleString('en-PH', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  document.getElementById('receipt-box').innerHTML = `
+    <div class="receipt-title">Order Receipt</div>
+    ${order.items.map(i => `<div class="receipt-row"><span>${i.name} ×${i.qty}</span><span>₱${i.price * i.qty}</span></div>`).join('')}
+    <div class="receipt-divider"></div>
+    <div class="receipt-total"><span>Total</span><span>₱${order.total}</span></div>
+    <div class="receipt-meta">Section: ${order.section} &nbsp;·&nbsp; ${time}</div>`;
+}
+
+function newOrder() { cart = {}; go('order-form'); }
+
+// ── ADMIN ──
+function adminLogin() {
+  const pw  = document.getElementById('admin-pw').value;
+  const err = document.getElementById('pw-err');
+  if (pw === 'admin123') {
+    err.style.display = 'none';
+    document.getElementById('admin-pw').value = '';
+    renderDashboard();
+    go('admin-dashboard');
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+function adminLogout() { go('landing'); }
+
+function setTab(tab, btn) {
+  adminFilter = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const allOrders = JSON.parse(localStorage.getItem('canteen_orders') || '[]').reverse();
+  const filtered  = adminFilter === 'All' ? allOrders : allOrders.filter(o => o.section === adminFilter);
+  const revenue   = allOrders.reduce((s,o) => s + o.total, 0);
+  const sections  = ['Wakelet','Einstein','Galilei','Newton'];
+
+  // Stats
+  document.getElementById('stats-grid').innerHTML = [
+    `<div class="stat-card"><div class="stat-val">${allOrders.length}</div><div class="stat-lbl">Total Orders</div></div>`,
+    `<div class="stat-card"><div class="stat-val green">₱${revenue}</div><div class="stat-lbl">Total Revenue</div></div>`,
+    ...sections.map(s =>
+      `<div class="stat-card"><div class="stat-val">${allOrders.filter(o => o.section === s).length}</div><div class="stat-lbl">${s}</div></div>`
+    )
+  ].join('');
+
+  // Orders
+  const list = document.getElementById('orders-list');
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <h3>No orders yet</h3>
+        <p>${adminFilter === 'All' ? 'Student orders will appear here.' : 'No orders from ' + adminFilter + ' yet.'}</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(order => {
+    const time = new Date(order.timestamp).toLocaleString('en-PH', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    return `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <div class="order-name">
+              ${order.name}
+              ${order.isNew ? '<span class="new-tag">NEW</span>' : ''}
+            </div>
+            <div class="order-meta">${time} &nbsp;·&nbsp; <span class="chip chip-${order.section}">${order.section}</span></div>
+          </div>
+        </div>
+        <div class="order-items-box">
+          ${order.items.map(i => `
+            <div class="order-item-row">
+              <span>${i.name} ×${i.qty}</span>
+              <span>₱${i.price * i.qty}</span>
+            </div>`).join('')}
+        </div>
+        <div class="order-foot">
+          <div class="order-total">Total: <span>₱${order.total}</span></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Mark as seen
+  const raw = JSON.parse(localStorage.getItem('canteen_orders') || '[]');
+  raw.forEach(o => o.isNew = false);
+  localStorage.setItem('canteen_orders', JSON.stringify(raw));
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── INIT ──
+document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
+document.getElementById('landing').style.display = 'flex';
+document.getElementById('landing').classList.add('active');
+</script>
+</body>
+</html>
